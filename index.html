@@ -33,7 +33,7 @@
 <body>
     <h1>Chore Assignments</h1>
 
-    <h2>This Week's Chores</h2>
+    <h2 id="thisWeekHeader">This Week's Chores</h2>
     <table id="thisWeekChoreTable">
         <tr>
             <th>Chore</th>
@@ -41,7 +41,7 @@
         </tr>
     </table>
 
-    <h2>Last Week's Chores</h2>
+    <h2 id="lastWeekHeader">Last Week's Chores</h2>
     <table id="lastWeekChoreTable">
         <tr>
             <th>Chore</th>
@@ -51,11 +51,9 @@
 
     <script>
         function nextSunday(fromDate) {
-            const daysAhead = 6 - fromDate.getDay();
-            if (daysAhead <= 0) {
-                return new Date(fromDate.getTime() + (7 + daysAhead) * 86400000);
-            }
-            return new Date(fromDate.getTime() + daysAhead * 86400000);
+            const date = new Date(fromDate);
+            date.setDate(date.getDate() + (7 - date.getDay()) % 7);
+            return date;
         }
 
         function getAssignments(weeksPassed) {
@@ -85,14 +83,26 @@
             });
         }
 
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+        }
+
         function main() {
             const today = new Date();
-            const nextSun = nextSunday(today);
-            const referenceDate = new Date(2024, 8, 15); // Note: month is 0-indexed
-            const weeksPassed = Math.floor((nextSun - referenceDate) / (7 * 86400000));
+            const upcomingSunday = nextSunday(today);
+            const referenceDate = new Date(2024, 8, 15); // September 15, 2024
+
+            // Calculate weeks passed from reference date to the upcoming Sunday
+            const weeksPassed = Math.floor((upcomingSunday - referenceDate) / (7 * 86400000));
+
+            const lastSunday = new Date(upcomingSunday);
+            lastSunday.setDate(lastSunday.getDate() - 7);
 
             const thisWeekAssignments = getAssignments(weeksPassed);
             const lastWeekAssignments = getAssignments(weeksPassed - 1);
+
+            document.getElementById('thisWeekHeader').textContent = `This Week's Chores (Week of ${formatDate(upcomingSunday)})`;
+            document.getElementById('lastWeekHeader').textContent = `Last Week's Chores (Week of ${formatDate(lastSunday)})`;
 
             populateTable("thisWeekChoreTable", thisWeekAssignments);
             populateTable("lastWeekChoreTable", lastWeekAssignments);

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chore Assignments</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chore Assignments</h1>
+    <table id="choreTable">
+        <tr>
+            <th>Chore</th>
+            <th>Person</th>
+        </tr>
+    </table>
+
+    <script>
+        function nextSunday(fromDate) {
+            const daysAhead = 6 - fromDate.getDay();
+            if (daysAhead <= 0) {
+                return new Date(fromDate.getTime() + (7 + daysAhead) * 86400000);
+            }
+            return new Date(fromDate.getTime() + daysAhead * 86400000);
+        }
+
+        function main() {
+            const today = new Date();
+            const nextSun = nextSunday(today);
+            const referenceDate = new Date(2024, 8, 15); // Note: month is 0-indexed
+            const weeksPassed = Math.floor((nextSun - referenceDate) / (7 * 86400000));
+
+            const chores = [
+                "Kitchen, tabletops, couch, window ledge",
+                "Top floor",
+                "Bottom floor & bathroom floor",
+                "Shower",
+                "Bathroom sink, ledge, mirror, toilet"
+            ];
+            const people = ["Akshay", "Aman", "Shaurir", "Ashwin", "Pratik"];
+
+            const wrappedIndex = weeksPassed % people.length;
+            const rotatedPeople = [...people.slice(wrappedIndex), ...people.slice(0, wrappedIndex)];
+
+            const table = document.getElementById("choreTable");
+            for (let i = 0; i < chores.length; i++) {
+                const row = table.insertRow(-1);
+                const choreCell = row.insertCell(0);
+                const personCell = row.insertCell(1);
+                choreCell.textContent = chores[i];
+                personCell.textContent = rotatedPeople[i];
+            }
+        }
+
+        main();
+    </script>
+</body>
+</html>
